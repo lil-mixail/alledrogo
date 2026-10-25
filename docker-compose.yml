@@ -1,0 +1,20 @@
+# baza do dev: docker compose up -d
+services:
+  db:
+    image: postgres:16
+    container_name: alledrogo-db
+    environment:
+      POSTGRES_DB: alledrogo
+      POSTGRES_USER: alledrogo
+      POSTGRES_PASSWORD: alledrogo
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alledrogo"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  pgdata:

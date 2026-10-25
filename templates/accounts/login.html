@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Logowanie{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-md rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
+  <h1 class="mb-6 text-2xl font-bold">Zaloguj się</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include "_form.html" %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="w-full rounded-md bg-orange-600 py-2 font-medium text-white hover:bg-orange-700">Zaloguj</button>
+  </form>
+  <p class="mt-6 text-center text-sm text-slate-600">
+    Nie masz konta? <a href="{% url 'accounts:register' %}" class="text-orange-600 hover:underline">Zarejestruj się</a>
+  </p>
+</div>
+{% endblock %}
