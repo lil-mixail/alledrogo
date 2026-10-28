@@ -1,6 +1,47 @@
 {% extends "base.html" %}
 {% block title %}Produkty{% endblock %}
 {% block content %}
-<h1 class="mb-4 text-2xl font-bold">Produkty</h1>
-<p class="text-slate-600">Tu pojawi się lista produktów (osoba 2).</p>
+<div class="mb-6 flex flex-wrap items-center gap-4">
+  <h1 class="text-2xl font-bold">Produkty</h1>
+  <form method="get" class="ml-auto flex gap-2">
+    <input type="search" name="q" value="{{ q }}" placeholder="Szukaj..."
+           class="rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none">
+    <button class="rounded-md border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">Szukaj</button>
+  </form>
+  {% if user.is_seller %}
+    <a href="{% url 'products:create' %}" class="rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700">+ Dodaj produkt</a>
+  {% endif %}
+</div>
+
+{% if page.object_list %}
+  <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+    {% for product in page %}
+      <a href="{{ product.get_absolute_url }}" class="block overflow-hidden rounded-lg border border-slate-200 bg-white hover:shadow">
+        {% with img=product.images.all|first %}
+          {% if img %}
+            <img src="{{ img.image.url }}" alt="{{ product.title }}" class="h-40 w-full object-cover">
+          {% else %}
+            <div class="flex h-40 items-center justify-center bg-slate-100 text-sm text-slate-400">brak zdjęcia</div>
+          {% endif %}
+        {% endwith %}
+        <div class="p-3">
+          <p class="line-clamp-2 text-sm font-medium">{{ product.title }}</p>
+          <p class="mt-1 text-lg font-bold text-orange-600">{{ product.price }} zł</p>
+          <p class="text-xs text-slate-500">{{ product.seller.username }}</p>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+
+  {% if page.has_other_pages %}
+    <nav class="mt-8 flex items-center justify-center gap-4 text-sm">
+      {% if page.has_previous %}<a href="?q={{ q|urlencode }}&page={{ page.previous_page_number }}" class="hover:text-orange-600">&larr; Poprzednia</a>{% endif %}
+      <span class="text-slate-500">Strona {{ page.number }} z {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}<a href="?q={{ q|urlencode }}&page={{ page.next_page_number }}" class="hover:text-orange-600">Następna &rarr;</a>{% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <p class="text-slate-600">Nie znaleziono produktów.</p>
+{% endif %}
 {% endblock %}
+

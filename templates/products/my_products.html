@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Moje produkty{% endblock %}
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+  <h1 class="text-2xl font-bold">Moje produkty</h1>
+  <a href="{% url 'products:create' %}" class="rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700">+ Dodaj produkt</a>
+</div>
+<div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-left text-slate-500">
+      <tr><th class="px-4 py-2">Nazwa</th><th class="px-4 py-2">Cena</th><th class="px-4 py-2">Ilość</th><th class="px-4 py-2">Status</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+        <tr class="border-t border-slate-100">
+          <td class="px-4 py-2"><a href="{{ p.get_absolute_url }}" class="hover:text-orange-600">{{ p.title }}</a></td>
+          <td class="px-4 py-2">{{ p.price }} zł</td>
+          <td class="px-4 py-2">{{ p.stock }}</td>
+          <td class="px-4 py-2">{% if p.is_active %}widoczny{% else %}<span class="text-slate-400">ukryty</span>{% endif %}</td>
+          <td class="px-4 py-2 text-right"><a href="{% url 'products:edit' p.pk %}" class="text-orange-600 hover:underline">Edytuj</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">Nie masz jeszcze produktów.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
