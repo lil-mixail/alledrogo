@@ -14,23 +14,26 @@
 </div>
 
 {% if page.object_list %}
-  <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-    {% for product in page %}
-      <a href="{{ product.get_absolute_url }}" class="block overflow-hidden rounded-lg border border-slate-200 bg-white hover:shadow">
-        {% with img=product.images.all|first %}
-          {% if img %}
-            <img src="{{ img.image.url }}" alt="{{ product.title }}" class="h-40 w-full object-cover">
-          {% else %}
-            <div class="flex h-40 items-center justify-center bg-slate-100 text-sm text-slate-400">brak zdjęcia</div>
-          {% endif %}
-        {% endwith %}
-        <div class="p-3">
-          <p class="line-clamp-2 text-sm font-medium">{{ product.title }}</p>
-          <p class="mt-1 text-lg font-bold text-orange-600">{{ product.price }} zł</p>
-          <p class="text-xs text-slate-500">{{ product.seller.username }}</p>
-        </div>
-      </a>
-    {% endfor %}
+<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+{% for product in page %}
+  <div class="overflow-hidden rounded-lg border border-slate-200 bg-white hover:shadow">
+    <a href="{{ product.get_absolute_url }}" class="block">
+      {% with img=product.images.all|first %}
+        {% if img %}
+          <img src="{{ img.image.url }}" alt="{{ product.title }}" class="h-40 w-full object-cover">
+        {% else %}
+          <div class="flex h-40 items-center justify-center bg-slate-100 text-sm text-slate-400">brak zdjęcia</div>
+        {% endif %}
+      {% endwith %}
+      <div class="p-3">
+        <p class="line-clamp-2 text-sm font-medium">{{ product.title }}</p>
+        <p class="mt-1 text-lg font-bold text-orange-600">{{ product.price }} zł</p>
+        <p class="text-xs text-slate-500">{{ product.seller.username }}</p>
+      </div>
+    </a>
+    <div class="px-3 pb-3">{% include "orders/_add_to_cart.html" %}</div>
+  </div>
+{% endfor %}
   </div>
 
   {% if page.has_other_pages %}

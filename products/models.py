@@ -23,7 +23,7 @@ class Product(models.Model):
     title = models.CharField("nazwa", max_length=120)
     description = models.TextField("opis", max_length=5000)
     price = models.DecimalField(
-        "cena (zł)", max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("0.01"))]
+        "cena (zł)", max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("2.00"))]
     )
     stock = models.PositiveIntegerField("dostępna ilość", default=1)
     is_active = models.BooleanField("widoczny w sklepie", default=True)

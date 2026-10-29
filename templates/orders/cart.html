@@ -2,5 +2,61 @@
 {% block title %}Koszyk{% endblock %}
 {% block content %}
 <h1 class="mb-4 text-2xl font-bold">Koszyk</h1>
-<p class="text-slate-600">Tu pojawi się koszyk i zamówienia (osoba 3).</p>
+
+{% if cart %}
+  <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+    <table class="w-full text-left">
+      <thead class="border-b border-slate-200 bg-slate-50 text-sm text-slate-600">
+        <tr>
+          <th class="px-4 py-3">Produkt</th>
+          <th class="px-4 py-3">Cena</th>
+          <th class="px-4 py-3">Ilość</th>
+          <th class="px-4 py-3">Razem</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart %}
+        <tr class="border-b border-slate-100 last:border-0">
+          <td class="px-4 py-3 font-medium">{{ item.product.title }}</td>
+          <td class="px-4 py-3">{{ item.product.price }} zł</td>
+          <td class="px-4 py-3">
+            <form method="post" action="{% url 'orders:cart_update' item.product.pk %}" class="flex items-center gap-2">
+              {% csrf_token %}
+              <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}"
+                    class="w-20 rounded border border-slate-300 px-2 py-1">
+              <button type="submit" class="text-sm text-slate-600 hover:text-slate-900">Zmień</button>
+            </form>
+          </td>
+          <td class="px-4 py-3 font-semibold">{{ item.subtotal }} zł</td>
+          <td class="px-4 py-3 text-right">
+            <form method="post" action="{% url 'orders:cart_remove' item.product.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="text-sm text-red-600 hover:underline">Usuń</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="mt-4 text-right text-xl font-bold">Do zapłaty: {{ cart.total_price }} zł</p>
+      {% if user.is_authenticated %}
+    <form method="post" action="{% url 'orders:checkout' %}" class="mt-4 text-right">
+      {% csrf_token %}
+      <button type="submit" class="rounded-lg bg-orange-600 px-6 py-3 font-semibold text-white hover:bg-orange-700">Złóż zamówienie</button>
+    </form>
+  {% else %}
+    <p class="mt-4 text-right text-sm">
+      <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}" class="text-orange-600 hover:underline">Zaloguj się, aby złożyć zamówienie</a>
+    </p>
+  {% endif %}
+{% else %}
+  <p class="text-slate-600">Twój koszyk jest pusty.</p>
+  <a href="{% url 'products:list' %}"
+     class="mt-4 inline-block rounded-lg bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700">
+    Przejdź do produktów
+  </a>
+{% endif %}
 {% endblock %}

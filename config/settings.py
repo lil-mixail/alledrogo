@@ -67,6 +67,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "orders.context_processors.cart_summary",
             ],
         },
     },
@@ -137,3 +138,6 @@ LOGGING = {
         "alledrogo.security": {"handlers": ["console"], "level": "INFO", "propagate": False},
     },
 }
+# platnosci
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
