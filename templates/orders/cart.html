@@ -41,12 +41,69 @@
     </table>
   </div>
 
-  <p class="mt-4 text-right text-xl font-bold">Do zapłaty: {{ cart.total_price }} zł</p>
-      {% if user.is_authenticated %}
-    <form method="post" action="{% url 'orders:checkout' %}" class="mt-4 text-right">
+  <div class="mt-4 space-y-1 text-right">
+    <p class="text-slate-600">Produkty: {{ cart.items_price }} zł</p>
+    <p class="text-slate-600">Wysyłka: {% if cart.shipping_price %}{{ cart.shipping_price }} zł{% else %}darmowa{% endif %}</p>
+    <p class="text-xl font-bold">Do zapłaty: {{ cart.total_price }} zł</p>
+  </div>
+  {% if user.is_authenticated %}
+    {% with f=delivery_form %}
+    <form method="post" action="{% url 'orders:checkout' %}" id="delivery-form"
+          class="mt-6 rounded-lg border border-slate-200 bg-white p-6">
       {% csrf_token %}
-      <button type="submit" class="rounded-lg bg-orange-600 px-6 py-3 font-semibold text-white hover:bg-orange-700">Złóż zamówienie</button>
+      <h2 class="mb-4 text-lg font-semibold">Dostawa</h2>
+
+      <fieldset class="mb-4">
+        <legend class="mb-2 text-sm font-medium">{{ f.delivery_method.label|capfirst }}</legend>
+        <div class="flex flex-wrap gap-3">
+          {% for radio in f.delivery_method %}
+            <label class="flex cursor-pointer items-center gap-2 rounded-md border border-slate-300 px-4 py-2 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-50">
+              {{ radio.tag }} {{ radio.choice_label }}
+            </label>
+          {% endfor %}
+        </div>
+        {% for error in f.delivery_method.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </fieldset>
+
+      <div class="grid gap-x-4 sm:grid-cols-2">
+        {% include "orders/_delivery_field.html" with field=f.full_name %}
+        {% include "orders/_delivery_field.html" with field=f.phone %}
+      </div>
+
+      <div data-delivery="inpost">
+        {% include "orders/_delivery_field.html" with field=f.parcel_locker %}
+        <p class="-mt-2 mb-4 text-xs text-slate-500">
+          Kod znajdziesz na <a href="https://inpost.pl/znajdz-paczkomat" target="_blank" rel="noopener" class="text-orange-600 hover:underline">mapie paczkomatów</a>.
+        </p>
+      </div>
+
+      <div data-delivery="courier">
+        {% include "orders/_delivery_field.html" with field=f.street %}
+        <div class="grid gap-x-4 sm:grid-cols-3">
+          {% include "orders/_delivery_field.html" with field=f.postal_code %}
+          <div class="sm:col-span-2">{% include "orders/_delivery_field.html" with field=f.city %}</div>
+        </div>
+      </div>
+
+      <div class="text-right">
+        <button type="submit" class="rounded-lg bg-orange-600 px-6 py-3 font-semibold text-white hover:bg-orange-700">Złóż zamówienie</button>
+      </div>
     </form>
+    {% endwith %}
+    <script>
+      // pokazujemy tylko pola wybranego sposobu dostawy (bez JS widać wszystkie)
+      (function () {
+        const form = document.getElementById("delivery-form");
+        const update = () => {
+          const method = form.querySelector("input[name=delivery_method]:checked")?.value;
+          form.querySelectorAll("[data-delivery]").forEach((el) => {
+            el.hidden = method !== undefined && el.dataset.delivery !== method;
+          });
+        };
+        form.addEventListener("change", update);
+        update();
+      })();
+    </script>
   {% else %}
     <p class="mt-4 text-right text-sm">
       <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}" class="text-orange-600 hover:underline">Zaloguj się, aby złożyć zamówienie</a>

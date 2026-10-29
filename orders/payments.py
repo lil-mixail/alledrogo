@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 from decimal import Decimal
 
 import stripe
@@ -18,23 +19,25 @@ def to_grosze(amount: Decimal) -> int:
     return int((amount * 100).to_integral_value())
 
 
+def _line_item(name, amount, quantity=1):
+    return {
+        "quantity": quantity,
+        "price_data": {"currency": "pln", "unit_amount": to_grosze(amount), "product_data": {"name": name}},
+    }
+
+
 def create_checkout_session(request, order):
     detail_url = request.build_absolute_uri(reverse("orders:detail", args=[order.pk]))
+    line_items = [_line_item(item.title, item.unit_price, item.quantity) for item in order.items.all()]
+    if order.shipping_total:
+        line_items.append(_line_item("Wysyłka", order.shipping_total))
     session = stripe.checkout.Session.create(
         mode="payment",
         client_reference_id=str(order.pk),
         metadata={"order_id": str(order.pk)},
-        line_items=[
-            {
-                "quantity": item.quantity,
-                "price_data": {
-                    "currency": "pln",
-                    "unit_amount": to_grosze(item.unit_price),
-                    "product_data": {"name": item.title},
-                },
-            }
-            for item in order.items.all()
-        ],
+        line_items=line_items,
+        # Stripe wymaga min. 30 minut; po terminie i tak zamykamy sesję przy anulowaniu
+        expires_at=int(max(order.payment_deadline, timezone.now() + timedelta(minutes=31)).timestamp()),
         success_url=detail_url + "?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=detail_url,
     )
@@ -86,11 +89,25 @@ def sync_order_payment(order):
     return mark_paid(session)
 
 
-def expire_session(session_id):
-    """Unieważnia otwartą sesję (np. po anulowaniu zamówienia), żeby nie dało się już zapłacić."""
-    if not session_id:
-        return
+def close_session(order):
+    """Zamyka sesję płatności przed anulowaniem zamówienia, żeby nie dało się już zapłacić.
+
+    Zwraca False, jeśli zamówienia nie wolno anulować: klient zdążył zapłacić
+    (wtedy oznaczamy je jako opłacone) albo Stripe nie odpowiada.
+    """
+    if not order.stripe_session_id:
+        return True
     try:
-        stripe.checkout.Session.expire(session_id)
+        stripe.checkout.Session.expire(order.stripe_session_id)
+        return True
     except stripe.StripeError:
-        logger.info("Stripe: nie udało się wygasić sesji %s (mogła już wygasnąć)", session_id)
+        pass  # sesja już zamknięta: wygasła albo została opłacona, sprawdzamy która
+    try:
+        session = stripe.checkout.Session.retrieve(order.stripe_session_id)
+    except stripe.StripeError:
+        logger.exception("Stripe: nie udało się sprawdzić sesji zamówienia #%s", order.pk)
+        return False
+    if session.payment_status == "paid":
+        mark_paid(session)
+        return False
+    return True

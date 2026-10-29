@@ -22,6 +22,9 @@
     <p class="mt-1 text-sm text-slate-500">Sprzedawca: {{ product.seller.username }}</p>
     {% if stats.count %}<p class="mt-1 text-sm">★ {{ stats.avg|floatformat:1 }} · opinie: {{ stats.count }}</p>{% endif %}
     <p class="mt-4 text-3xl font-bold text-orange-600">{{ product.price }} zł</p>
+    <p class="mt-1 text-sm text-slate-600">
+      {% if product.shipping_cost %}+ wysyłka {{ product.shipping_cost }} zł{% else %}Darmowa wysyłka{% endif %}
+    </p>
     <p class="mt-1 text-sm text-slate-500">Dostępne: {{ product.stock }} szt.</p>
     {% if not product.is_active %}
       <p class="mt-3 rounded-md bg-yellow-50 px-3 py-2 text-sm text-yellow-800">Produkt jest ukryty – widzisz go tylko Ty.</p>

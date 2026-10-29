@@ -21,6 +21,7 @@
         {% endif %}
         {% if user.is_seller %}
           <a href="{% url 'products:mine' %}" class="hover:text-orange-600">Moje produkty</a>
+          <a href="{% url 'orders:seller_orders' %}" class="hover:text-orange-600">Sprzedaż</a>
         {% endif %}
       </div>
 

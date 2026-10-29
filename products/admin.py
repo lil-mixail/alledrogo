@@ -10,7 +10,7 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("title", "seller", "price", "stock", "is_active", "created_at")
+    list_display = ("title", "seller", "price", "shipping_cost", "stock", "is_active", "created_at")
     list_filter = ("is_active",)
     search_fields = ("title", "seller__username")
     inlines = [ProductImageInline]

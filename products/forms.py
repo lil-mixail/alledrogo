@@ -24,7 +24,7 @@ def validate_image(file):
 class ProductForm(StyledFormMixin, forms.ModelForm):
     class Meta:
         model = Product
-        fields = ("title", "description", "price", "stock", "is_active")
+        fields = ("title", "description", "price", "shipping_cost", "stock", "is_active")
         widgets = {"description": forms.Textarea(attrs={"rows": 6})}
 
 

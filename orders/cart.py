@@ -1,5 +1,7 @@
 from products.models import Product
 
+from .shipping import shipping_total
+
 CART_SESSION_KEY = "cart"
 
 
@@ -38,5 +40,13 @@ class Cart:
         return sum(self.cart.values())
 
     @property
-    def total_price(self):
+    def items_price(self):
         return sum(item["subtotal"] for item in self)
+
+    @property
+    def shipping_price(self):
+        return shipping_total((item["product"].seller_id, item["product"].shipping_cost) for item in self)
+
+    @property
+    def total_price(self):
+        return self.items_price + self.shipping_price

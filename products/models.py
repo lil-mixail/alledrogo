@@ -25,6 +25,11 @@ class Product(models.Model):
     price = models.DecimalField(
         "cena (zł)", max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("2.00"))]
     )
+    shipping_cost = models.DecimalField(
+        "koszt wysyłki (zł)", max_digits=8, decimal_places=2, default=Decimal("0.00"),
+        validators=[MinValueValidator(Decimal("0.00"))],
+        help_text="0 = darmowa wysyłka. Przy kilku produktach od Ciebie w jednym zamówieniu liczy się najwyższy koszt.",
+    )
     stock = models.PositiveIntegerField("dostępna ilość", default=1)
     is_active = models.BooleanField("widoczny w sklepie", default=True)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -30,6 +30,10 @@ Strona: http://127.0.0.1:8000, admin: http://127.0.0.1:8000/admin/
 Jak `python` nie działa to zamiast niego `py`.
 W `.env` ma być `127.0.0.1`, nie `localhost`, bo inaczej na Windowsie baza się wiesza.
 
+Nieopłacone zamówienia są anulowane po godzinie (`ORDER_PAYMENT_TIMEOUT_MINUTES` w `.env`), a towar wraca na magazyn.
+Lokalnie robi to samo middleware przy ruchu na stronie. Na AWS warto dodać cron co 5 minut:
+`python manage.py cancel_expired_orders`.
+
 ## Konta testowe
 
 Hasło do wszystkich: `Alledrogo!2026`
