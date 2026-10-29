@@ -1,0 +1,18 @@
+{% if product.is_active and product.stock > 0 and product.seller_id != user.pk %}
+  <form method="post" action="{% url 'orders:cart_add' product.pk %}" class="flex items-center gap-2">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    {% if show_qty %}
+      <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}"
+             class="w-20 rounded-md border border-slate-300 px-2 py-2 text-sm">
+    {% else %}
+      <input type="hidden" name="quantity" value="1">
+    {% endif %}
+    <button type="submit"
+            class="rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700">
+      Do koszyka
+    </button>
+  </form>
+{% elif product.stock == 0 %}
+  <p class="text-xs text-slate-500">Brak w magazynie</p>
+{% endif %}

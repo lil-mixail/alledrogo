@@ -28,7 +28,7 @@
     {% endif %}
 
     <div class="mt-6 flex flex-wrap gap-3">
-      {# przycisk "Do koszyka" dodaje osoba 3 #}
+      {% if not can_manage %}{% include "orders/_add_to_cart.html" with show_qty=True %}{% endif %}
       {% if can_manage %}
         <a href="{% url 'products:edit' product.pk %}" class="rounded-md border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100">Edytuj</a>
       {% elif user.is_authenticated %}

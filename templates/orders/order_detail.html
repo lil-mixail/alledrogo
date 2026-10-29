@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Zamówienie #{{ order.pk }}{% endblock %}
+{% block content %}
+<div class="mb-4 flex flex-wrap items-center gap-3">
+  <h1 class="text-2xl font-bold">Zamówienie #{{ order.pk }}</h1>
+  <span class="rounded bg-slate-100 px-2 py-1 text-sm text-slate-700">{{ order.get_status_display }}</span>
+  <span class="text-sm text-slate-500">{{ order.created_at|date:"d.m.Y H:i" }}</span>
+</div>
+
+<div class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+  <table class="w-full text-left">
+    <thead class="border-b border-slate-200 bg-slate-50 text-sm text-slate-600">
+      <tr>
+        <th class="px-4 py-3">Produkt</th>
+        <th class="px-4 py-3">Cena</th>
+        <th class="px-4 py-3">Ilość</th>
+        <th class="px-4 py-3">Razem</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in order.items.all %}
+      <tr class="border-b border-slate-100 last:border-0">
+        <td class="px-4 py-3 font-medium">
+          {% if item.product %}<a href="{{ item.product.get_absolute_url }}" class="hover:text-orange-600">{{ item.title }}</a>{% else %}{{ item.title }}{% endif %}
+        </td>
+        <td class="px-4 py-3">{{ item.unit_price }} zł</td>
+        <td class="px-4 py-3">{{ item.quantity }}</td>
+        <td class="px-4 py-3 font-semibold">{{ item.subtotal }} zł</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<p class="mt-4 text-right text-xl font-bold">Razem: {{ order.total }} zł</p>
+
+{% if order.paid_at %}
+  <p class="mt-2 text-right text-sm text-slate-500">Opłacono: {{ order.paid_at|date:"d.m.Y H:i" }}</p>
+{% endif %}
+
+{% if order.status == "new" %}
+  <div class="mt-4 flex justify-end gap-3">
+    <form method="post" action="{% url 'orders:cancel' order.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="rounded-md border border-red-300 px-4 py-2 text-sm text-red-600 hover:bg-red-50">Anuluj zamówienie</button>
+    </form>
+    <form method="post" action="{% url 'orders:pay' order.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="rounded-md bg-orange-600 px-5 py-2 text-sm font-semibold text-white hover:bg-orange-700">Zapłać kartą</button>
+    </form>
+  </div>
+{% endif %}
+
+<a href="{% url 'orders:list' %}" class="mt-6 inline-block text-sm text-orange-600 hover:underline">&larr; Moje zamówienia</a>
+{% endblock %}
