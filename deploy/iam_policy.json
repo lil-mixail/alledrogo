@@ -1,0 +1,26 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Sekrety",
+      "Effect": "Allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": [
+        "arn:aws:secretsmanager:eu-north-1:<ACCOUNT_ID>:secret:alledrogo/app-*",
+        "<ARN sekretu RDS>"
+      ]
+    },
+    {
+      "Sid": "ZdjeciaS3",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      "Resource": "arn:aws:s3:::<nazwa bucketa>/*"
+    },
+    {
+      "Sid": "ListaS3",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::<nazwa bucketa>"
+    }
+  ]
+}

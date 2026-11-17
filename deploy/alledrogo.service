@@ -1,0 +1,21 @@
+[Unit]
+Description=Alledrogo (gunicorn)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=alledrogo
+Group=alledrogo
+WorkingDirectory=/opt/alledrogo/app
+EnvironmentFile=/etc/alledrogo.env
+# migracje przy starcie; "-" = jak dwa serwery wystartuja naraz i jeden dostanie blad, i tak rusza dalej
+ExecStartPre=-/opt/alledrogo/venv/bin/python manage.py migrate --noinput
+ExecStart=/opt/alledrogo/venv/bin/gunicorn config.wsgi:application -c gunicorn.conf.py
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
