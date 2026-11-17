@@ -4,3 +4,7 @@ python-dotenv>=1.0
 psycopg[binary]>=3.2
 Pillow>=11.0
 stripe
+gunicorn>=23.0
+whitenoise>=6.7
+django-storages[s3]>=1.14
+boto3>=1.35
