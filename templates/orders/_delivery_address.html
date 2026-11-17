@@ -1,0 +1,10 @@
+<dl class="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-[max-content_1fr]">
+  <dt class="text-slate-500">Dostawa</dt><dd>{{ order.get_delivery_method_display|default:"—" }}</dd>
+  <dt class="text-slate-500">Odbiorca</dt><dd>{{ order.full_name|default:"—" }}</dd>
+  <dt class="text-slate-500">Telefon</dt><dd>{{ order.phone|default:"—" }}</dd>
+  {% if order.delivery_method == "inpost" %}
+    <dt class="text-slate-500">Paczkomat</dt><dd class="font-mono">{{ order.parcel_locker }}</dd>
+  {% elif order.delivery_method == "courier" %}
+    <dt class="text-slate-500">Adres</dt><dd>{{ order.street }}, {{ order.postal_code }} {{ order.city }}</dd>
+  {% endif %}
+</dl>

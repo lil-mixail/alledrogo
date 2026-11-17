@@ -58,6 +58,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "orders.middleware.CancelExpiredOrdersMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -164,3 +165,5 @@ LOGGING = {
 # platnosci
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+# po tylu minutach nieopłacone zamówienie jest anulowane, a towar wraca na magazyn
+ORDER_PAYMENT_TIMEOUT_MINUTES = int(os.environ.get("ORDER_PAYMENT_TIMEOUT_MINUTES", "60"))
