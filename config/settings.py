@@ -145,6 +145,10 @@ STORAGES = {
 if AWS_STORAGE_BUCKET_NAME:
     STORAGES["default"] = {"BACKEND": "storages.backends.s3.S3Storage"}
     AWS_S3_REGION_NAME = os.getenv("AWS_REGION", "eu-north-1")
+    # bez tego linki ida na globalne s3.amazonaws.com (us-east-1) i S3 odrzuca podpis
+    AWS_S3_ENDPOINT_URL = f"https://s3.{AWS_S3_REGION_NAME}.amazonaws.com"
+    AWS_S3_ADDRESSING_STYLE = "virtual"
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
     AWS_DEFAULT_ACL = None          # bucket prywatny
     AWS_QUERYSTRING_AUTH = True     # zdjecia przez podpisane linki
     AWS_QUERYSTRING_EXPIRE = 3600
