@@ -16,3 +16,6 @@ staticfiles/
 .idea/
 .DS_Store
 Thumbs.db
+# packer (powstaje w CI)
+deploy/packer/app.tar.gz
+deploy/packer/manifest.json
