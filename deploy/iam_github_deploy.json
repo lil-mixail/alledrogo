@@ -30,7 +30,9 @@
       ],
       "Resource": "*",
       "Condition": {
-        "StringEquals": { "aws:RequestedRegion": "eu-north-1" }
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-north-1"
+        }
       }
     },
     {
@@ -40,10 +42,7 @@
         "ec2:CreateLaunchTemplateVersion",
         "ec2:ModifyLaunchTemplate"
       ],
-      "Resource": "arn:aws:ec2:eu-north-1:663252309407:launch-template/*",
-      "Condition": {
-        "StringEquals": { "ec2:LaunchTemplateName": "alledrogo-app-lt" }
-      }
+      "Resource": "arn:aws:ec2:eu-north-1:663252309407:launch-template/lt-0ea7664792025d078"
     },
     {
       "Sid": "AsgRefresh",
@@ -66,7 +65,9 @@
       "Action": "iam:PassRole",
       "Resource": "arn:aws:iam::663252309407:role/alledrogo-ec2",
       "Condition": {
-        "StringEquals": { "iam:PassedToService": "ec2.amazonaws.com" }
+        "StringEquals": {
+          "iam:PassedToService": "ec2.amazonaws.com"
+        }
       }
     }
   ]
