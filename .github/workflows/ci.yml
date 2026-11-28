@@ -4,7 +4,7 @@ name: ci
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main,develop]
 
 # CI nie potrzebuje AWS ani zapisu do repo
 permissions:
